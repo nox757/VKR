@@ -32,6 +32,8 @@ for el in list_f:
             f_out.write(souph)
             soup1 = soup.find('p', itemprop='articleBody').get_text()
             f_out.write(soup1 + '\n')
+        else:
+            f_err.write(str(i) + '\n')
         f_out.close()
     except:
         f_err.write(str(i) + '\n')
@@ -41,28 +43,3 @@ f_err.close()
 
 
 
-
-
-
-
-
-
-##for fi in range(len(list_f)):
-##    if fi == 0:
-##        path_full = path_f + list_f[fi]
-##        f = open(path_full, 'rb')
-##        soup = BeautifulSoup(f, "lxml")
-##        print(soup)
-
-
-
-##f = open('k:/Andrew/vkr/example/1.htm', 'rb')
-##soup = BeautifulSoup(f, "lxml")
-##
-##
-##
-##for strong_tag in soup.find('ul', 'codes-list').find_all('span'):
-##    if strong_tag.text == 'ГРНТИ: ':
-##        print (strong_tag.next_sibling.replace(' ',''))
-##soup1 = soup.find('p', itemprop='articleBody').get_text()
-##print (soup1)
