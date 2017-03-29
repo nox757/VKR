@@ -5,11 +5,12 @@ import lxml
 from bs4 import BeautifulSoup
 
 i = 0
-path_f = 'k:/Andrew/vkr/example/f1000/'
-path_out = 'k:/Andrew/vkr/example/f1001/'
-path_err = 'k:/Andrew/vkr/example/err_f1001.txt'
+path_f = 'k:/Andrew/vkr/example/f40k/'
+path_out = 'k:/Andrew/vkr/example/f40k1/'
+path_err = 'k:/Andrew/vkr/example/err_f40k1.txt'
 f_err = open(path_err, 'w', encoding='utf8')
 list_f = os.listdir(path_f)
+s = ""
 for el in list_f:
     path_full = path_f + el
     f = open(path_full, 'rb')
@@ -18,18 +19,19 @@ for el in list_f:
     try:
         full_out = path_out + str(i) + '.txt'
         f_out = open(full_out, 'w', encoding='utf8')
-        
+        ## find GRNTI code
+        s = ""
         for strong_tag in soup.find('ul', 'codes-list').find_all('span'):
             if strong_tag.text == 'ГРНТИ: ':
                 s = strong_tag.next_sibling
 ##                ss = re.match(r'\d\d', s)
 ##                print(s, ss.group(0))
                 f_out.write(s + '\n')
-        souph = soup.find('span', itemprop='headline').get_text().replace('\n', ' ')
-        f_out.write(souph) 
-        soup1 = soup.find('p', itemprop='articleBody').get_text()
-        #soup1 = soup1.replace('\n', ' ')
-        f_out.write(soup1 + '\n')
+        if(s != ""):
+            souph = soup.find('span', itemprop='headline').get_text().replace('\n', ' ')
+            f_out.write(souph)
+            soup1 = soup.find('p', itemprop='articleBody').get_text()
+            f_out.write(soup1 + '\n')
         f_out.close()
     except:
         f_err.write(str(i) + '\n')
