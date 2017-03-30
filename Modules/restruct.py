@@ -17,8 +17,8 @@ for el in list_f:
             os.mkdir(path_out)
         f_out = open(path_out  + el, 'w', encoding='utf-8')
         str1 = f.readline()
-        f_out.write(str0) # str all name category and code
-        f_out.write(str1.strip()) # str name article
+        f_out.write(str0+'\n') # str all name category and code
+        f_out.write(str1.strip()+'\n') # str name article
         str2 = f.read().replace('\n', ' ')
         str2 = str2.lower()
         res = re.findall(r"\b([а-яё]+)", str2)
