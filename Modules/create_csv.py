@@ -2,10 +2,10 @@ import csv
 import os
 import re
 
-output_file = open("k:/Andrew/vkr/example/1600.csv", 'w')
+output_file = open("k:/Andrew/vkr/example/40k1.csv", 'w')
 csv_out = csv.writer(output_file)
-path_f = 'k:/Andrew/vkr/example/f1001/'
-path_err = 'k:/Andrew/vkr/example/err2_1600_csv.txt'
+path_f = 'k:/Andrew/vkr/example/f40k1/'
+path_err = 'k:/Andrew/vkr/example/err2_40k_csv.txt'
 f_err = open(path_err, 'w', encoding='utf-8')
 list_f = os.listdir(path_f)
 for el in list_f:
@@ -33,7 +33,7 @@ output_file.close()
 
 
 
-# output_file = open("probe.csv", 'r')
+# output_file = open("k:/Andrew/vkr/example/40k.csv", 'r')
 # csv_out = csv.reader(output_file, delimiter=',')
 # for row in csv_out:
 #     if(row != []):
