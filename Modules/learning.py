@@ -6,27 +6,22 @@ import codecs
 import numpy as np
 import string
 import sys
-import matplotlib
+import matplotlib.pyplot as plt
 
 
-
-
+plt.interactive(False)
 csv.field_size_limit(sys.maxsize)
 stop_words = stopwords.words('russian')
 #k:/Andrew/vkr/example/1600.csv
-output_file = open("k:/Andrew/vkr/example/1600.csv", 'r')
-csv_out = csv.reader(output_file)
-raw_data = []
-for row in csv_out:
-    if(row != []):
-        raw_data.append(row)
-output_file.close()
-#df = pd.read_csv(raw_data, header=None, error_bad_lines=False)
-#print(raw_data)
-#f.close()
-df = pd.DataFrame(raw_data)
-df.to_csv('probe1.csv', encoding='utf-8')
+
 df1 = pd.read_csv('probe1.csv',encoding='utf-8')
 df1 = df1.dropna()
-print(df1['2'].apply(lambda x: len(x.split(' '))).sum())
+#print(df1['2'].apply(lambda x: len(x.split(' '))).sum()) ## count words in all test
+my_tags= []
+for el in df1['0'].drop_duplicates():
+    my_tags.append(str(el))
+
+df1['0'].value_counts().plot(kind="bar",rot = 0)
+
+plt.show()
 
