@@ -35,3 +35,7 @@ stop_words = stopwords.words('russian')
 #
 # plt.show()
 
+
+df = pd.read_csv('k:/Andrew/vkr/example/40k1_pandas.csv',encoding='utf-8')
+print(df['0'].value_counts())
+
