@@ -24,7 +24,8 @@ for el in list_f:
 
         newstr = []
         for word in str2.split(' '):
-            if ('NOUN' in morp.parse(word)[0].tag) or ('ADJF' in morp.parse(word)[0].tag):
+            morp_list = morp.parse(word)[0].tag
+            if ('NOUN' in morp_list) or ('ADJF' in morp_list):
                 newstr.append(morp.normal_forms(word)[0])
         str2 = ' '.join(newstr)
         f_out.write(str2 + '\n')
