@@ -13,7 +13,7 @@ f_err = open(path_err, 'w', encoding='utf-8')
 list_f = os.listdir(path_f)
 stop_words = stopwords.words('russian')
 
-for el in list_f[1:10]:
+for el in list_f:
     try:
         f = open(path_f + el, 'r', encoding='utf-8')
         struct = []
@@ -23,8 +23,8 @@ for el in list_f[1:10]:
         struct.append(str1.strip())
 
         str2 = f.read().replace('\n', ' ')
-        res = str2.strip(' ')
-        res = [i for i in res  if ( i not in stop_words )]
+        res = str2.split(' ')
+        res = [i for i in res  if len(i) > 3 and ( i not in stop_words )]
         str2 = ' '.join(res)
         struct.append(str2.strip())
         csv_out.writerow(struct)
