@@ -1,26 +1,30 @@
 import csv
 import os
 import re
+from nltk.corpus import stopwords
+import nltk
+import string
 
-output_file = open("k:/Andrew/vkr/example/40k1.csv", 'w')
+output_file = open("k:/Andrew/vkr/example/40k2_notCl.csv", 'w')
 csv_out = csv.writer(output_file)
-path_f = 'k:/Andrew/vkr/example/f40k1/'
-path_err = 'k:/Andrew/vkr/example/err2_40k_csv.txt'
+path_f = 'k:/Andrew/vkr/example/f40k2_notCl/'
+path_err = 'k:/Andrew/vkr/example/err2_40k2_notCl_csv.txt'
 f_err = open(path_err, 'w', encoding='utf-8')
 list_f = os.listdir(path_f)
-for el in list_f:
+stop_words = stopwords.words('russian')
+
+for el in list_f[1:10]:
     try:
         f = open(path_f + el, 'r', encoding='utf-8')
         struct = []
-        str00 = f.readline()
-        str0 = str(re.match(r'\d\d', str00).group(0))
-        struct.append(str0.replace('\n','').strip())
+        str0 = f.readline()
+        struct.append(str0.strip())
         str1 = f.readline()
-        struct.append(str1.replace('\n','').strip())
+        struct.append(str1.strip())
 
         str2 = f.read().replace('\n', ' ')
-        str2 = str2.lower()
-        res = re.findall(r"\b([а-яё]+)", str2)
+        res = str2.strip(' ')
+        res = [i for i in res  if ( i not in stop_words )]
         str2 = ' '.join(res)
         struct.append(str2.strip())
         csv_out.writerow(struct)
@@ -29,6 +33,7 @@ for el in list_f:
         f_err.write(str(el) + '\n')
         f.close()
         pass
+f_err.close()
 output_file.close()
 
 
