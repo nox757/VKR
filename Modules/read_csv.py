@@ -23,18 +23,19 @@ f_err = open(path_err, 'w', encoding='utf-8')
 # del df[df.columns[0]]
 # print(df.columns[0])
 # df = df.groupby(['0'])
-df = 
 list_f = os.listdir(path_f)
-for el in list_f:
+result = pd.DataFrame()
+
+for el in list_f:###read all data to 'result' 0-GRNTI, 1-Name Article, 2-Text
     try:
-        pd.read_csv(path_f+el, encoding='utf-8')
-        df1 = df.get_group((cat))
-        fl_count = len(df1)
-        print(fl_count)
-        if(fl_count >= 500):
-            df1 = df1[:500]
-            df1.to_csv(path_f+str(cat)+'.csv', encoding='utf-8')
+        df = pd.read_csv(path_f+el, encoding='utf-8',usecols=["0", "1", "2"])
+
+        result = result.append(df, ignore_index=True)
+
     except:
-        f_err.write(str(cat)+'\n')
+        f_err.write(str(el)+'\n')
         pass
+#to get only array of values:
+#       result["Name column in qoutes"].values
+print(result[["0","1"]])
 f_err.close()
