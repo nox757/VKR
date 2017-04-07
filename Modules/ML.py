@@ -19,12 +19,42 @@ import scipy
 from sklearn import metrics
 from sklearn.externals import joblib
 from sklearn.pipeline import Pipeline
+import datetime as dt
+import itertools
+
+def pltConfus_matrix (matrix, tagret, title="Confusion matrix", cmp= plt.cm.Blues, path_f=os.getcwd()):
+    plt.imshow(matrix,interpolation='nearest', cmap=cmp)
+    plt.title(title)
+    plt.colorbar()
+    plt.savefig(path_f)
+    tick_marks = np.arange(len(tagret))
+    plt.xticks(tick_marks, tagret, rotation=45)
+    plt.yticks(tick_marks, tagret)
+
+    thresh = matrix.max() / 2.
+    for i, j in itertools.product(range(matrix.shape[0]), range(matrix.shape[1])):
+        plt.text(j, i, matrix[i, j],
+                 horizontalalignment="center",
+                 color="white" if matrix[i, j] > thresh else "black")
+    plt.tight_layout()
+    plt.ylabel('True label')
+    plt.xlabel('Predicted label')
+    plt.savefig(path_f+"\\graphics.png")
+
+
+def metricsToFile(tagret, predict, path = os.getcwd()):
+    dates = dt.datetime.strftime(dt.datetime.now(), "%Y%m%d_%H%M")
+    file = open(path +"\\"+ str(dates) + ".txt", 'a', encoding='utf-8')
+    file.write(dates + '\n')
+    file.write(metrics.classification_report(tagret, predict))
+    file.write(repr(metrics.confusion_matrix(tagret, predict)))
+    file.write('\n')
+    file.close()
 
 def modelToFile(model, name="Noname", path=os.getcwd()):
-    path_f = path + "\\"
-    if not os.path.exists(path_f+name):
+    path_f = path + name
+    if not os.path.exists(path_f):
         os.mkdir(path_f+name)
-    path_f = path_f + name
     joblib.dump(model, str(path_f)+"\\"+name+".mdl")
     return path_f
 
@@ -36,37 +66,32 @@ def modelFromFile(name="Noname", path=os.getcwd()):
 csv.field_size_limit(sys.maxsize)
 plt.interactive(False)
 path_f = 'k:/Andrew/vkr/example/f40k_csv_ravn_NA/'
-path_model = 'K:\\Andrew\\Programming\\VKR\\Results'
+path_model = 'K:\\Andrew\\Programming\\VKR\\Results\\'
 
 list_f = os.listdir(path_f)
 data = pd.DataFrame()
-for el in list_f[:3]:
+for el in list_f[:2]:
     df = pd.read_csv(path_f+el, encoding='utf-8', usecols=['0','1','2'], nrows=100)
     data = data.append(df, ignore_index=True)
 train_data, test_data = train_test_split(data, test_size=0.2, random_state=42)
 print(len(train_data))
-# clf_text = Pipeline([
-#     ('cntvec' ,CountVectorizer(analyzer='word', tokenizer=nltk.word_tokenize)),
-#     ('logreg', linear_model.LogisticRegression(n_jobs=1, C=1e5)),
-#     ])
+clf_text = Pipeline([
+    ('cntvec' ,CountVectorizer(analyzer='word', tokenizer=nltk.word_tokenize)),
+    ('logreg', linear_model.LogisticRegression(n_jobs=1, C=1e5)),
+    ])
 
-cntvec = CountVectorizer(analyzer='word', tokenizer=nltk.word_tokenize)
-train_data_features = cntvec.fit_transform(train_data['2'])
+clf_text = clf_text.fit(train_data['2'], train_data['0'])
 
-logreg = linear_model.LogisticRegression(n_jobs=1, C=1e5)
-logreg = logreg.fit(train_data_features, train_data['0'])
-#print(len(cntvec.get_feature_names()))
-#print(train_data[train_data['2'].str.contains("ятельнейший")==True])
+path_mdl = modelToFile(clf_text, "Probe", path_model)
+#clf_text = modelFromFile("Probe", path_mdl)
 
-test_data_features = cntvec.transform(test_data['2'])
-predicted = logreg.predict(test_data_features)
+predicted =  clf_text.predict(test_data['2'])
+metricsToFile(test_data['0'], predicted, path_mdl)
 print(np.mean(predicted == test_data['0']))
 
 
-# clf_text = clf_text.fit(train_data['2'], train_data['0'])
-#
-# path_mdl = modelToFile(clf_text, "Probe", path_model)
-# clf_text = modelFromFile("Probe", path_mdl)
-#
-# predicted =  clf_text.predict(test_data['2'])
-# print(np.mean(predicted == test_data['0']))
+cnf_matrix = metrics.confusion_matrix(test_data['0'], predicted)
+plt.figure()
+pltConfus_matrix(matrix=cnf_matrix, tagret=test_data['0'].drop_duplicates(),
+                      title='Confusion matrix LR', path_f=path_mdl)
+plt.show()
