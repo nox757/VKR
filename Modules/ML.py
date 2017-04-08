@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 import os
 import tqdm
 from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.linear_model import LogisticRegression
 from sklearn import  linear_model
 import sklearn
@@ -41,7 +42,7 @@ def pltConfus_matrix (matrix, tagret, title="Confusion matrix", cmp= plt.cm.Blue
     plt.xlabel('Predicted label')
     plt.savefig(path_f+"\\graphics.png")
 
-
+#return name of txt file with metrics
 def metricsToFile(tagret, predict, path = os.getcwd()):
     dates = dt.datetime.strftime(dt.datetime.now(), "%Y%m%d_%H%M")
     file = open(path +"\\"+ str(dates) + ".txt", 'a', encoding='utf-8')
@@ -52,6 +53,7 @@ def metricsToFile(tagret, predict, path = os.getcwd()):
     file.close()
     return dates
 
+#return path of folder with model
 def modelToFile(model, name="Noname", path=os.getcwd()):
     path_f = path + name
     if not os.path.exists(path_f):
@@ -69,7 +71,7 @@ def strtofile(name="Noname file", path_f=os.getcwd(), str=""):
 
 csv.field_size_limit(sys.maxsize)
 plt.interactive(False)
-path_f = 'k:/Andrew/vkr/example/f40k_csv_ravn/'
+path_f = 'k:/Andrew/vkr/example/f40k_csv_ravn_NA/'
 path_model = 'K:\\Andrew\\Programming\\VKR\\Results\\'
 
 list_f = os.listdir(path_f)
@@ -81,13 +83,14 @@ train_data, test_data = train_test_split(data, test_size=0.2, random_state=42)
 print(len(train_data))
 clf_text = Pipeline([
     ('cntvec' ,CountVectorizer(analyzer='word', tokenizer=nltk.word_tokenize)),
+    ('tfidf', TfidfTransformer(use_idf=False)),
     ('logreg', linear_model.LogisticRegression(n_jobs=1, C=1e5)),
     ])
 
 clf_text = clf_text.fit(train_data['2'], train_data['0'])
 print(len(clf_text.named_steps['cntvec'].get_feature_names()))
 
-path_mdl = modelToFile(clf_text, "LR_cv_wh", path_model)
+path_mdl = modelToFile(clf_text, "LR_td", path_model)
 #clf_text = modelFromFile("Probe", path_mdl)
 
 predicted =  clf_text.predict(test_data['2'])
