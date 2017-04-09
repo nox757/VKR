@@ -76,21 +76,22 @@ path_model = 'K:\\Andrew\\Programming\\VKR\\Results\\'
 
 list_f = os.listdir(path_f)
 data = pd.DataFrame()
-for el in list_f:
+for el in list_f[:2]:
     df = pd.read_csv(path_f+el, encoding='utf-8', usecols=['0','1','2'])
     data = data.append(df, ignore_index=True)
 train_data, test_data = train_test_split(data, test_size=0.2, random_state=42)
 print(len(train_data))
 clf_text = Pipeline([
-    ('cntvec' ,CountVectorizer(analyzer='word', tokenizer=nltk.word_tokenize)),
+    ('cntvec' ,CountVectorizer()),
     ('tfidf', TfidfTransformer(use_idf=False)),
     ('logreg', linear_model.LogisticRegression(n_jobs=1, C=1e5)),
     ])
 
 clf_text = clf_text.fit(train_data['2'], train_data['0'])
+
 print(len(clf_text.named_steps['cntvec'].get_feature_names()))
 
-path_mdl = modelToFile(clf_text, "LR_td", path_model)
+path_mdl = modelToFile(clf_text, "Probe", path_model)
 #clf_text = modelFromFile("Probe", path_mdl)
 
 predicted =  clf_text.predict(test_data['2'])
