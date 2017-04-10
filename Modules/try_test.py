@@ -17,23 +17,22 @@ import sklearn
 from sklearn.externals import joblib
 
 
-def modelFromFile(name="Noname", path=os.getcwd()):
-    name = name + ".mdl"
-    load_model = joblib.load(str(path)+"\\"+name)
-    return load_model
-path_f = 'k:/Andrew/vkr/example/f40k_csv_ravn_NA/'
-list_f = os.listdir(path_f)
-data = pd.DataFrame()
-for el in list_f[:3]:
-    df = pd.read_csv(path_f+el, encoding='utf-8', usecols=['0','1','2'], nrows=100)
-    data = data.append(df, ignore_index=True)
-
-
-clf = modelFromFile(name="Probe", path="K:\Andrew\Programming\VKR\Results")
-predicted = clf.predict(data['2'])
-print(np.mean(predicted == data['0']))
 
 
 
 
+plt.interactive(False)
+path_f = 'k:/Andrew/vkr/example/f40k2/'
+list_c = os.listdir(path_f)
+mystat = []
+for cat in list_c:
+    mystat.append((int(cat),len(os.listdir(path_f+cat))))
+print(mystat)
+df = pd.DataFrame(data=mystat, columns=['0', '1'])
+df = df.sort(['1'], ascending=False)
+
+print(df.head())
+plt.figure(figsize=(20,5))
+df['1'].plot(kind='bar',rot=0).set_xticklabels(df['0'])
+plt.show()
 
