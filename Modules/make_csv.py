@@ -10,8 +10,8 @@ import matplotlib.pyplot as plt
 import os
 
 
-path_f = 'k:/Andrew/vkr/example/f40k_csv_ravn/'
-path_err = 'k:/Andrew/vkr/example/err2_40k2_notCl_pandasToCsv.txt'
+path_f = 'k:/Andrew/vkr/example/f40k_csv_ravn100/'
+path_err = 'k:/Andrew/vkr/example/err2_40k2__ravn100_notCl_pandasToCsv.txt'
 f_err = open(path_err, 'w', encoding='utf-8')
 mylist = []
 for chunk in  pd.read_csv('k:/Andrew/vkr/example/40k2_notCl_pandas.csv', encoding='utf-8', chunksize=2000):
@@ -28,8 +28,8 @@ for cat in categ:
         df1 = df.get_group((cat))
         fl_count = len(df1)
         print(fl_count)
-        if(fl_count >= 500):
-            df1 = df1[:500]
+        if(fl_count >= 100):
+            df1 = df1[:100]
             df1.to_csv(path_f+str(cat)+'.csv', encoding='utf-8')
     except:
         f_err.write(str(cat)+'\n')
