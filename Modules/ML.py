@@ -72,13 +72,14 @@ def strtofile(name="Noname file", path_f=os.getcwd(), str=""):
 csv.field_size_limit(sys.maxsize)
 plt.interactive(False)
 #path_f = 'k:/Andrew/vkr/example/f40k_csv_ravn_NA/'
-path_f = 'k:/Andrew/vkr/example/f40k_csv_ravn100/'
+#path_f = 'k:/Andrew/vkr/example/f40k_csv_ravn100/'
+path_f = 'k:/Andrew/vkr/example/f40k1a_ravn500/'
 path_model = 'K:\\Andrew\\Programming\\VKR\\Results\\'
 
 list_f = os.listdir(path_f)
 data = pd.DataFrame()
 for el in list_f:
-    df = pd.read_csv(path_f+el, encoding='utf-8', usecols=['0','1','2'])
+    df = pd.read_csv(path_f+el, encoding='utf-8', usecols=['0','1'])
     data = data.append(df, ignore_index=True)
 train_data, test_data = train_test_split(data, test_size=0.2, random_state=42)
 print(len(train_data))
@@ -89,14 +90,14 @@ clf_text = Pipeline([
     ('logreg', linear_model.LogisticRegression(n_jobs=1, C=1e5)),
     ])
 
-clf_text = clf_text.fit(train_data['2'], train_data['0'])
+clf_text = clf_text.fit(train_data['1'], train_data['0'])
 
 print(len(clf_text.named_steps['cntvec'].get_feature_names()))
 
-path_mdl = modelToFile(clf_text, "Probe_100", path_model)
+path_mdl = modelToFile(clf_text, "Probe_abstr", path_model)
 #clf_text = modelFromFile("Probe", path_mdl)
 
-predicted =  clf_text.predict(test_data['2'])
+predicted =  clf_text.predict(test_data['1'])
 file_metr = metricsToFile(test_data['0'], predicted, path_mdl)
 print(np.mean(predicted == test_data['0']))
 
