@@ -29,10 +29,13 @@ for cat in list_c:
     mystat.append((int(cat),len(os.listdir(path_f+cat))))
 print(mystat)
 df = pd.DataFrame(data=mystat, columns=['0', '1'])
-df = df.sort(['1'], ascending=False)
+df = df.sort(['1'], ascending=False)[:51]
 
 print(df.head())
-plt.figure(figsize=(20,5))
+plt.figure(figsize=(20,5)).suptitle("Количество по категориям")
+plt.xlabel("Категории")
+plt.ylabel("Количество статей")
 df['1'].plot(kind='bar',rot=0).set_xticklabels(df['0'])
+
 plt.show()
 

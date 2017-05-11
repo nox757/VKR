@@ -23,7 +23,24 @@ from sklearn.pipeline import Pipeline
 import datetime as dt
 import itertools
 
+def classifaction_report_csv(report , path_f):
+    report_data = []
+    lines = report.split('\n')
+    for line in lines[2:-3]:
+        row = {}
+        row_data = line.split('      ')
+        row['Класс'] = row_data[0]
+        row['Precision'] = float(row_data[1])
+        row['Recall'] = float(row_data[2])
+        row['F1_score'] = float(row_data[3])
+        row['Support'] = float(row_data[4])
+        report_data.append(row)
+    dataframe = pd.DataFrame.from_dict(report_data)
+    dataframe.to_csv(path_f + 'classification_report.csv', index = False)
+
+
 def pltConfus_matrix (matrix, tagret, title="Confusion matrix", cmp= plt.cm.Blues, path_f=os.getcwd()):
+
     plt.imshow(matrix,interpolation='nearest', cmap=cmp)
     plt.title(title)
     plt.colorbar()
@@ -38,8 +55,8 @@ def pltConfus_matrix (matrix, tagret, title="Confusion matrix", cmp= plt.cm.Blue
                  horizontalalignment="center",
                  color="white" if matrix[i, j] > thresh else "black")
     plt.tight_layout()
-    plt.ylabel('True label')
-    plt.xlabel('Predicted label')
+    plt.ylabel('Реальный класс')
+    plt.xlabel('Предсказанный класс')
     plt.savefig(path_f+"\\graphics.png")
 
 #return name of txt file with metrics
@@ -51,6 +68,8 @@ def metricsToFile(tagret, predict, path = os.getcwd()):
     file.write(repr(metrics.confusion_matrix(tagret, predict)))
     file.write('\n')
     file.close()
+    report = metrics.classification_report(tagret, predict)
+    classifaction_report_csv(report, path+"\\")
     return dates
 
 #return path of folder with model
@@ -72,7 +91,7 @@ def strtofile(name="Noname file", path_f=os.getcwd(), str=""):
 csv.field_size_limit(sys.maxsize)
 plt.interactive(False)
 #path_f = 'k:/Andrew/vkr/example/f40k_csv_ravn_NA/'
-#path_f = 'k:/Andrew/vkr/example/f40k_csv_ravn100/'
+#path_f = 'k:/Andrew/vkr/example/f40k1a_ravn100/'
 path_f = 'k:/Andrew/vkr/example/f40k1a_ravn500/'
 path_model = 'K:\\Andrew\\Programming\\VKR\\Results\\'
 
@@ -83,18 +102,17 @@ for el in list_f:
     data = data.append(df, ignore_index=True)
 train_data, test_data = train_test_split(data, test_size=0.2, random_state=42)
 print(len(train_data))
-
 clf_text = Pipeline([
     ('cntvec' ,CountVectorizer()),
-    ('tfidf', TfidfTransformer()),
+    #('tfidf', TfidfTransformer()),
     ('logreg', linear_model.LogisticRegression(n_jobs=1, C=1e5)),
     ])
 
-clf_text = clf_text.fit(train_data['1'], train_data['0'])
+clf_text = clf_text.fit(train_data['1'].values, train_data['0'])
 
 print(len(clf_text.named_steps['cntvec'].get_feature_names()))
 
-path_mdl = modelToFile(clf_text, "Probe_abstr", path_model)
+path_mdl = modelToFile(clf_text, "Try11", path_model)
 #clf_text = modelFromFile("Probe", path_mdl)
 
 predicted =  clf_text.predict(test_data['1'])
@@ -103,8 +121,9 @@ print(np.mean(predicted == test_data['0']))
 
 
 cnf_matrix = metrics.confusion_matrix(test_data['0'], predicted)
-plt.figure()
+plt.figure(figsize=(6,5))
 pltConfus_matrix(matrix=cnf_matrix, tagret=clf_text.classes_,
-                      title='Confusion matrix LR', path_f=path_mdl)
+                      title='Матрица неточностей', path_f=path_mdl)
 plt.show()
 strtofile(name=file_metr,path_f=path_mdl,str="count words:"+str(len(clf_text.named_steps['cntvec'].get_feature_names())))
+
