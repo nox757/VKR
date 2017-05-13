@@ -29,18 +29,6 @@ def tohtml():
     driver.close()
 
 
-def try_pdf():
-    pdfFileObj = open('K:\Andrew\Интернет\erase_chrome\elibrary_1.pdf', 'rb')
-    pdfReader = PyPDF2.PdfFileReader(pdfFileObj)
-    print(pdfReader.numPages)
-    page_content = pdfReader.getPage(1).extractText()
-
-    print(page_content)
-
-def try_pdf2():
-    fp = open('K:\Andrew\Интернет\erase_chrome\elibrary_1.pdf', 'rb')
-    parser = pdfminer.PDFParser(fp)
-
 
 a = ""
 input(a)
