@@ -27,3 +27,6 @@ f.close()
 #
 # soup1 = soup.find('span', itemprop='headline').get_text().replace('\n', ' ')
 # print (soup1)
+
+
+

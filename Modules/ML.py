@@ -40,7 +40,6 @@ def classifaction_report_csv(report , path_f):
 
 
 def pltConfus_matrix (matrix, tagret, title="Confusion matrix", cmp= plt.cm.Blues, path_f=os.getcwd()):
-
     plt.imshow(matrix,interpolation='nearest', cmap=cmp)
     plt.title(title)
     plt.colorbar()
@@ -84,42 +83,54 @@ def modelFromFile(name="Noname", path=os.getcwd()):
     load_model = joblib.load(str(path)+"\\"+name + ".mdl")
     return load_model
 
+#append str to file which called Name
 def strtofile(name="Noname file", path_f=os.getcwd(), str=""):
     with open(path_f + "\\"+name+".txt", "a", encoding='utf-8') as text_file:
         print(str, file=text_file)
 
+#setting system
 csv.field_size_limit(sys.maxsize)
 plt.interactive(False)
+
+#some needed path with needed file
 #path_f = 'k:/Andrew/vkr/example/f40k_csv_ravn_NA/'
 #path_f = 'k:/Andrew/vkr/example/f40k1a_ravn100/'
 path_f = 'k:/Andrew/vkr/example/f40k1a_ravn500/'
 path_model = 'K:\\Andrew\\Programming\\VKR\\Results\\'
 
+##reading preprocess data from folder with *csv
 list_f = os.listdir(path_f)
 data = pd.DataFrame()
 for el in list_f:
     df = pd.read_csv(path_f+el, encoding='utf-8', usecols=['0','1'])
     data = data.append(df, ignore_index=True)
+
+#divide all data to test and train
 train_data, test_data = train_test_split(data, test_size=0.2, random_state=42)
 print(len(train_data))
+
+#create pipe
 clf_text = Pipeline([
     ('cntvec' ,CountVectorizer()),
     #('tfidf', TfidfTransformer()),
     ('logreg', linear_model.LogisticRegression(n_jobs=1, C=1e5)),
     ])
 
+#train model
 clf_text = clf_text.fit(train_data['1'].values, train_data['0'])
 
 print(len(clf_text.named_steps['cntvec'].get_feature_names()))
 
-path_mdl = modelToFile(clf_text, "Try11", path_model)
-#clf_text = modelFromFile("Probe", path_mdl)
+#to save model
+path_mdl = modelToFile(clf_text, name="Try11", path=path_model)
+#clf_text = modelFromFile("Probe", path_mdl) # to load model
 
+#use model with test data
 predicted =  clf_text.predict(test_data['1'])
+
+#create files with reports
 file_metr = metricsToFile(test_data['0'], predicted, path_mdl)
 print(np.mean(predicted == test_data['0']))
-
-
 cnf_matrix = metrics.confusion_matrix(test_data['0'], predicted)
 plt.figure(figsize=(6,5))
 pltConfus_matrix(matrix=cnf_matrix, tagret=clf_text.classes_,

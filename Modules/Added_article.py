@@ -55,8 +55,8 @@ def load_with_firefox(list_id):
 def check_correct_txt():
     path_f = ''
     list_f = os.listdir(path_f)
-    for el in list_f:
-        f.open('utf-8', enco)
+    # for el in list_f:
+    #     f.open('')
 
 result = create_list()
 print(len(result))
