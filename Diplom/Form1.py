@@ -6,11 +6,14 @@
 #
 # WARNING! All changes made in this file will be lost!
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import (QMainWindow, QTextEdit, QAction, QFileDialog, QApplication)
+from PyQt5.QtWidgets import (QMainWindow, QTextEdit, QAction, QFileDialog, QApplication, QErrorMessage)
 from PyQt5.QtGui import QIcon
 from sklearn.externals import joblib
 import os
+import re
+import PyQt5
 
+import PreprocessText as pt
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -201,10 +204,18 @@ class Ui_MainWindow(object):
 
     def openfile(self):
         filename = QFileDialog.getOpenFileName()[0]
-        f = open(filename, 'r')
-        data = f.read()
-       # data = filename
-        f.close()
+        data = ''
+        if(filename[-4:] == '.pdf'):
+            data = pt.read_from_pdf(filename)
+            data = pt.try_decode(data)
+        elif (filename[-4:] == '.txt'):
+            data = pt.read_from_txt(filename)
+            data = pt.try_decode(data)
+        elif (filename[-5:] == '.docx'):
+            data = pt.read_from_docx(filename)
+            data = pt.try_decode(data)
+        else:
+            QtWidgets.QMessageBox.about(MainWindow, "Ошибка", "Можно открыть только\n *.pdf *.docx или *.txt")
         self.textEdit.setText(data)
 
     def savefile(self):
@@ -244,9 +255,14 @@ class Ui_MainWindow(object):
         self.textBrowser.setText(data)
 
     def kodgrnti(self):
-        data = self.textEdit.toPlainText()
-        kod = self.clf.predict(data)
+        str = self.textEdit.toPlainText()
+
+
+        print(str)
+        kod = self.clf.predict(str)
+        print(kod)
         self.textBrowser_2.setText(kod)
+
 
 
 if __name__ == "__main__":
