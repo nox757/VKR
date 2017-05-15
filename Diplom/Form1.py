@@ -11,7 +11,6 @@ from PyQt5.QtGui import QIcon
 from sklearn.externals import joblib
 import os
 import re
-import PyQt5
 
 import PreprocessText as pt
 
@@ -207,16 +206,18 @@ class Ui_MainWindow(object):
         data = ''
         if(filename[-4:] == '.pdf'):
             data = pt.read_from_pdf(filename)
-            data = pt.try_decode(data)
         elif (filename[-4:] == '.txt'):
             data = pt.read_from_txt(filename)
-            data = pt.try_decode(data)
         elif (filename[-5:] == '.docx'):
             data = pt.read_from_docx(filename)
-            data = pt.try_decode(data)
         else:
             QtWidgets.QMessageBox.about(MainWindow, "Ошибка", "Можно открыть только\n *.pdf *.docx или *.txt")
-        self.textEdit.setText(data)
+        if(data != ''):
+            data = pt.try_decode(data)
+            if data:
+                self.textEdit.setText(data)
+            else:
+                QtWidgets.QMessageBox.about(MainWindow, "Ошибка", "Не удалось найти русский текст")
 
     def savefile(self):
         filename = QFileDialog.getSaveFileName(MainWindow)
@@ -256,13 +257,23 @@ class Ui_MainWindow(object):
 
     def kodgrnti(self):
         str = self.textEdit.toPlainText()
+        if(str != ''):
+            lst = pt.preprocess(str)
+            if lst:
+                data = pt.get_only_NAD(lst)
+                if data:
+                    kod = self.clf.predict(data)[0]
+                    kod = repr(kod)
+                    self.textBrowser_2.setText(kod)
+                else:
+                    self.showErrMsg("Ошибка чтения текста")
+            else:
+                self.showErrMsg("Ошибка предобработки текста")
+        else:
+            self.showErrMsg("Ошибка", "Нет текста")
 
-
-        print(str)
-        kod = self.clf.predict(str)
-        print(kod)
-        self.textBrowser_2.setText(kod)
-
+    def showErrMsg(self, string):
+        QtWidgets.QMessageBox.about(MainWindow, "Ошибка", string)
 
 
 if __name__ == "__main__":
